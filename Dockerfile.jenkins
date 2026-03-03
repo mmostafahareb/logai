@@ -1,0 +1,20 @@
+# Use the official Jenkins LTS image as base
+FROM jenkins/jenkins:lts
+
+# Switch to root user to install packages
+USER root
+
+# Update package lists and install sudo
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends sudo && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Add jenkins user to sudoers with no password requirement
+# Note: Granting ALL sudo access without password. For production use,
+# consider restricting to specific commands only for better security.
+RUN echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/jenkins && \
+    chmod 0440 /etc/sudoers.d/jenkins
+
+# Switch back to jenkins user
+USER jenkins
